@@ -1,0 +1,132 @@
+$primary-color: #1890ff;
+.sortable-ghost {
+    min-height: 5px;
+    width: 98% !important;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding-left: 10px;
+    position: absolute;
+    z-index: 99;
+    background: #fff;
+    &::before {
+        content: '';
+        height: 5px;
+        width: 100%;
+        background: $primary-color;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+}
+
+.left-panel {
+    :global {
+        .ant-collapse-content-box {
+            padding: 0 !important;
+        }
+    }
+}
+.left-main {
+    height: calc(100% - 40px);
+    overflow: auto;
+}
+
+.component-property-form {
+    :global {
+        .ant-form-item {
+            margin-bottom: 15px;
+        }
+    }
+}
+
+.component-tab {
+    :global {
+        .ant-tabs-nav-wrap {
+            height: 40px;
+        }
+        .ant-tabs {
+            height: 100%;
+        }
+        .ant-tabs-nav {
+            margin-bottom: 5px;
+        }
+        .ant-tabs-content {
+            height: 100%;
+            overflow-y: auto;
+        }
+    }
+}
+
+.form-list {
+    min-height: 80px;
+    margin-bottom: 2px;
+    box-sizing: border-box;
+    border: 1px dashed #29a6d8;
+    position: relative;
+    &:hover {
+        --gradient-colors: linear-gradient(
+            60deg,
+            #5f86f2,
+            #a65ff2,
+            #f25fd0,
+            #f25f61,
+            #f2cb5f,
+            #abf25f,
+            #5ff281,
+            #5ff2f0
+        );
+
+        border: 1px solid;
+        border-image: var(--gradient-colors) 1; // 使用 border-image 添加渐变边框效果
+        width: 100%;
+        border-radius: 1px;
+    }
+    .grid-col {
+        min-height: 80px;
+        // border: 1px dashed #ccc;
+        background: #fff;
+        padding: 1px;
+        // border-bottom: 1px dashed #ccc;
+        &:nth-child(odd) {
+            border-right: 1px dashed #ccc;
+        }
+    }
+}
+.card-main {
+    :global {
+        .ant-card-body {
+            background-color: #fbfbfd;
+        }
+    }
+    box-sizing: border-box;
+    margin-bottom: 2px;
+    border: 1px dashed #cacaca;
+    position: relative;
+
+    &:hover {
+        --gradient-colors: linear-gradient(
+            60deg,
+            #5f86f2,
+            #a65ff2,
+            #f25fd0,
+            #f25f61,
+            #f2cb5f,
+            #abf25f,
+            #5ff281,
+            #5ff2f0
+        );
+
+        border: 1px solid;
+        border-image: var(--gradient-colors) 1; // 使用 border-image 添加渐变边框效果
+        width: 100%;
+        border-radius: 1px;
+    }
+}
+
+.active {
+    --gradient-colors: linear-gradient(60deg, #5f86f2, #a65ff2, #f25fd0, #f25f61, #f2cb5f, #abf25f, #5ff281, #5ff2f0);
+    border: 1px solid;
+    border-image: var(--gradient-colors) 1; // 使用 border-image 添加渐变边框效果
+    width: 100%;
+    border-radius: 1px;
+}
