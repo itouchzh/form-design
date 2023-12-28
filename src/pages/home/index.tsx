@@ -10,7 +10,7 @@ const Home: React.FC<HomeProps> = ({}: HomeProps) => {
                 <h1 className="text-center leading-[50px] text-2xl">表单设计</h1>
                 <GithubOutlined
                     className="cursor-pointer text-3xl absolute right-3"
-                    onClick={() => window.open('https://github.com/ant-design/ant-design', '_blank')}
+                    onClick={() => window.open('https://github.com/itouchzh/form-design', '_blank')}
                 />
             </header>
             <main className="h-[calc(100%-100px)]">

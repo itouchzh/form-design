@@ -267,6 +267,7 @@ const CenterBoard: React.FC<CenterBoardProps> = ({
                 <Tooltip title="预览" className="cursor-pointer text-blue-300 hover:text-blue-500 text-xl">
                     <YoutubeOutlined onClick={() => previewRef.current.changeModalState()} />
                 </Tooltip>
+
                 <Tooltip title="生成代码" className="cursor-pointer text-blue-300 hover:text-blue-500 text-xl">
                     <SaveOutlined onClick={() => generateCodeRef.current.changeModalState()} />
                 </Tooltip>

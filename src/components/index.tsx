@@ -116,7 +116,6 @@ const FormDesign: React.FC<IFormDesignProps> = ({}: IFormDesignProps) => {
                 onChange={(value) => setData((prev) => ({ ...prev, list: value }))}
                 currentDragItem={currentDragItem}
             />
-
             <div className="border-gray-300 border-2 border-solid w-[350px] min-w-[350px]">
                 <RightPanel
                     onChange={onSelectItemChange}
