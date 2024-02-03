@@ -48,7 +48,7 @@ const MainPage = () => {
 
     return (
         <div className="h-screen min-w-[900px]">
-            <header className="h-[50px] px-2 shadow-md mb-2 flex items-center">
+            <header className="h-[50px] px-2 shadow-md mb-2 flex items-center relative z-[1]">
                 <Row>
                     <Col span={24}>
                         <h1 className="text-xl text-blue-500 font-bold cursor-pointer">Form Design</h1>
@@ -67,7 +67,7 @@ const MainPage = () => {
                     alt="bg"
                 />
                 <div
-                    className="absolute right-0 top-[50px] w-[625px] h-[500px] filter blur-[4px] hover:blur-0 "
+                    className="absolute right-0 top-[65px] w-[625px] h-[500px] filter blur-[4px] hover:blur-0 "
                     style={{
                         transform: 'rotate3d(24, -83, 45, 57deg)',
                     }}
@@ -79,7 +79,7 @@ const MainPage = () => {
                         className="w-full h-full object-cover transition-transform"
                     />
                 </div>
-                <article className="">
+                <article className="relative z-[1]">
                     <h1 className="text-[60px] font-black p-5">Form Design </h1>
                     <p>助力设计开发者「更灵活」地搭建出 表单，让用户「快乐工作」～</p>
                 </article>
@@ -100,7 +100,6 @@ const MainPage = () => {
                     <MainCard title={'代码导出'} content={'一键导出React代码，快速开发。'} time={'2023-02-03'} />
                 </div>
             </main>
-            <footer></footer>
         </div>
     )
 }
