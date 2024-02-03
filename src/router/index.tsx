@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react'
 import { Navigate } from 'react-router-dom'
 import Home from '../pages/home'
+import Main from '../pages/main'
 // const Home = lazy(() => import('@/pages/home'))
 const suspense = (comp: JSX.Element) => <Suspense fallback={<>Loading...</>}>{comp}</Suspense>
 
@@ -12,7 +13,7 @@ export type RoutesItems = {
 const routes: RoutesItems[] = [
     {
         path: '/',
-        element: <Navigate to="/home" />,
+        element: <Main />,
     },
     {
         path: '/home',
