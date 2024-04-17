@@ -15,9 +15,10 @@ interface ICenterFormProps {
     handleDelete: () => void
     onChange: (value: any) => void
     handleColAdd: (evt: SortableEvent, record: IRecord, index: number, type?: string) => void
+    positionChange: (record: IRecord) => void
 }
 const CenterForm: React.FC<ICenterFormProps> = (props: ICenterFormProps) => {
-    const { record, config, hideKey, handleCopy, handleDelete, handleColAdd, onChange } = props
+    const { record, config, hideKey, handleCopy, handleDelete, handleColAdd, onChange, positionChange } = props
     const { selectItem, setSelectItem } = useSelectItemContext()
     const handleCopyItem = useStopPropagation(handleCopy)
     const handleDeleteItem = useStopPropagation(handleDelete)
@@ -46,6 +47,15 @@ const CenterForm: React.FC<ICenterFormProps> = (props: ICenterFormProps) => {
             }
         })
         return items
+    }
+
+    const handleEnd = (e: SortableEvent, record: IRecord) => {
+        const { newIndex, oldIndex } = e
+        const { list } = record
+        if (typeof newIndex === 'number' && typeof oldIndex === 'number') {
+            ;[list[newIndex], list[oldIndex]] = [list[oldIndex], list[newIndex]]
+        }
+        positionChange(record)
     }
 
     return (
@@ -103,18 +113,10 @@ const CenterForm: React.FC<ICenterFormProps> = (props: ICenterFormProps) => {
                             list={record.list}
                             setList={() => {}}
                             onAdd={(evt) => handleColAdd(evt, record, 0, record.type)}
+                            onEnd={(e) => handleEnd(e, record)}
                         >
                             {record.list.map((item: any) => (
-                                <CenterForm
-                                    key={item.key}
-                                    record={item}
-                                    config={config}
-                                    hideKey={hideKey}
-                                    handleCopy={handleCopy}
-                                    handleDelete={handleDelete}
-                                    onChange={onChange}
-                                    handleColAdd={handleColAdd}
-                                />
+                                <CenterForm {...props} key={item.key} record={item} />
                             ))}
                         </ReactSortable>
                     </Card>

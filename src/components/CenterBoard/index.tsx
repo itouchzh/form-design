@@ -1,5 +1,5 @@
 import { Form, Tooltip, Modal, Row, Col, Button } from 'antd'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { ReactSortable, SortableEvent } from 'react-sortablejs'
 import { SaveOutlined, DeleteOutlined, YoutubeOutlined, CopyOutlined } from '@ant-design/icons'
 import { cloneDeep, isEqual } from 'lodash'
@@ -105,18 +105,55 @@ const CenterBoard: React.FC<CenterBoardProps> = ({
         onChange(currentList)
         setSelectItem(currentDragItem!)
     }
+
     const handleColDragAdd = (_evt: SortableEvent, record: IRecord, index: number, type: string = 'grid') => {
+        console.log(index, 'index', record, currentDragItem)
+        const isHased = (arr: IRecord[], idx1 = 0) => {
+            for (let i = 0; i < arr.length; i++) {
+                const item = arr[i]
+                if (item.key === currentDragItem!.key) {
+                    console.log(idx1)
+                    return idx1
+                }
+                if (item.type === 'grid') {
+                    if (item.columns) {
+                        for (let i = 0; i < item.columns?.length; i++) {
+                            let ans: number = isHased(item.columns[i].list, i)
+                            if (ans !== -1) {
+                                return ans
+                            }
+                        }
+                    }
+                    // item?.columns?.forEach((col: any, idx) => {
+                    //     idx1 = idx
+                    //     let ans = isHased(col.list, idx1)
+                    // })
+                }
+                if (item.type === 'card') {
+                    isHased(item.list)
+                }
+                if (item.type === 'tabs' || item.type === 'collapses') {
+                    isHased(item[item.type][index].list)
+                }
+            }
+            return -1
+        }
+
         const currentList = cloneDeep(list)
+
+        let currentIndex = isHased(currentList)
+        let addItem = currentIndex !== -1 && selectItem.key !== currentDragItem!.key ? selectItem : currentDragItem
+        console.log(currentIndex, 'currentIndex')
         const recursiveSearch = (arr: IRecord[]) => {
             for (let i = 0; i < arr.length; i++) {
                 const item = arr[i]
                 if (item.key === record.key) {
                     if (type === 'grid') {
-                        item.columns![index].list.push(currentDragItem)
+                        item.columns![index].list.push(addItem)
                     } else if (type === 'card') {
-                        item.list.push(currentDragItem)
+                        item.list.push(addItem)
                     } else if (type === 'tabs' || type === 'collapses') {
-                        item[type][index].list.push(currentDragItem)
+                        item[type][index].list.push(addItem)
                     }
                     return arr // 找到匹配项后中断整个递归
                 }
@@ -134,8 +171,40 @@ const CenterBoard: React.FC<CenterBoardProps> = ({
             }
             return arr
         }
-        console.log(currentList)
-        onChange(recursiveSearch(currentList))
+
+        const deleteOriginItem = (arr: IRecord[]) => {
+            for (let i = 0; i < arr.length; i++) {
+                const item = arr[i]
+                if (item.key === record.key) {
+                    if (type === 'grid') {
+                        if (currentIndex !== index && currentIndex !== -1) {
+                            let curList = item.columns![currentIndex].list
+                            for (let k = 0; k < curList.length; k++) {
+                                if (addItem && curList[k].key === addItem.key) {
+                                    curList.splice(k, 1)
+                                    console.log(curList, 'curList')
+                                    break
+                                }
+                            }
+
+                            // arr.splice(i, 1)
+                        }
+                    }
+                    return arr
+                }
+                if (item.type === 'grid') {
+                    item?.columns?.forEach((col: any, idx: number) => {
+                        deleteOriginItem(col.list)
+                        currentIndex = idx
+                    })
+                }
+            }
+            return arr
+        }
+        const res = recursiveSearch(currentList)
+        const currentRes = deleteOriginItem(res)
+        console.log(currentRes, 'currentRes')
+        onChange(currentRes)
         setSelectItem(currentDragItem!)
     }
 
@@ -212,7 +281,7 @@ const CenterBoard: React.FC<CenterBoardProps> = ({
             ),
         })
     }
-    // monitor data changes through event bubbling , if data changed, update the
+    // monitor data changes through event bubbling , if data changed, update the selectItem
     const handleChange = (e: any) => {
         console.log(e)
         if (e.bubbles && ['select', 'checkbox'].includes(selectItem.type || '')) {
@@ -254,12 +323,47 @@ const CenterBoard: React.FC<CenterBoardProps> = ({
         onChange(deepSearch(list))
         setSelectItem((prev) => ({ ...prev, ...curSelectItem }))
     }
-    const handleEnd = ({ oldIndex, newIndex }: SortableEvent) => {
-        if (oldIndex && newIndex && oldIndex !== newIndex) {
-            let arr = cloneDeep(list)
-            ;[arr[oldIndex], arr[newIndex]] = [arr[newIndex], arr[oldIndex]]
-            onChange(arr)
+
+    // 组内交换位置
+    const handleEnd = useCallback(
+        ({ oldIndex, newIndex }: SortableEvent) => {
+            console.log(oldIndex)
+            if (typeof oldIndex === 'number' && typeof newIndex === 'number' && oldIndex !== newIndex) {
+                let arr = cloneDeep(list)
+                ;[arr[oldIndex], arr[newIndex]] = [arr[newIndex], arr[oldIndex]]
+                onChange(arr)
+            }
+        },
+        [list, onChange]
+    )
+    const handlePositionChange = (record: IRecord) => {
+        const traverse = (array: IRecord[]) => {
+            for (let index = 0; index < array.length; index++) {
+                let element = array[index]
+                if (element.type === 'grid') {
+                    // 栅格布局
+                    for (let j = 0; j < element.columns!.length; j++) {
+                        let item = element.columns![j]
+                        item.list = traverse(item.list)
+                    }
+                }
+                if (element.type === 'card') {
+                    element.list = traverse(element.list)
+                }
+                if (element.type === 'tabs' || element.type === 'collapses') {
+                    for (let k = 0; k < element[element.type].length; k++) {
+                        let item = element[element.type][k]
+                        item.list = traverse(item.list)
+                    }
+                }
+                if (element.key === record.key) {
+                    array[index] = record
+                    return array
+                }
+            }
+            return array
         }
+        onChange(traverse(list))
     }
     return (
         <div className="flex-1 min-w-[550px] border-gray-300 border-y-2 border-solid overflow-auto">
@@ -316,6 +420,7 @@ const CenterBoard: React.FC<CenterBoardProps> = ({
                                 handleDelete={handleDelete}
                                 onChange={handleChange}
                                 handleColAdd={handleColDragAdd}
+                                positionChange={handlePositionChange}
                             />
                         ))}
                     </ReactSortable>

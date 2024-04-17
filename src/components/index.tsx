@@ -32,10 +32,38 @@ const FormDesign: React.FC<IFormDesignProps> = ({}: IFormDesignProps) => {
         }))
         setSelectItem(item)
     }
+    const isHased = (arr: IRecord[]): boolean => {
+        for (let i = 0; i < arr.length; i++) {
+            const item = arr[i]
+            if (item.key === selectItem!.key) {
+                return true
+            }
+            if (item.type === 'grid') {
+                if (item.columns) {
+                    for (let i = 0; i < item.columns?.length; i++) {
+                        let ans: boolean = isHased(item.columns[i].list)
+                        if (ans) {
+                            return ans
+                        }
+                    }
+                }
+            }
+            if (item.type === 'card') {
+                isHased(item.list)
+            }
+        }
+        return false
+    }
+
+    // useEffect(() => {
+    //     setShowProperty(selectItem.key ? true : false)
+    //     setShowProperty(data.list.length > 0 ? true : false)
+    // }, [selectItem])
 
     useEffect(() => {
-        setShowProperty(selectItem.key ? true : false)
-    }, [selectItem])
+        console.log(data.list, 'datali')
+        setShowProperty(isHased(data.list)  ? true : false)
+    }, [selectItem, data.list])
 
     interface IValueObj {
         [key: string]: Array<string> | string
@@ -110,11 +138,11 @@ const FormDesign: React.FC<IFormDesignProps> = ({}: IFormDesignProps) => {
 
     return (
         <div className="flex w-full" style={{ height: '100%' }}>
-            <LeftPanel getDragItem={(record: IRecord) => setCurrentDragItem(record)} addList={handleClickAddList} />
+            <LeftPanel getDragItem={(record: IRecord) => setSelectItem(record)} addList={handleClickAddList} />
             <CenterBoard
                 data={data}
                 onChange={(value) => setData((prev) => ({ ...prev, list: value }))}
-                currentDragItem={currentDragItem}
+                currentDragItem={selectItem}
             />
             <div className="border-gray-300 border-2 border-solid w-[350px] min-w-[350px]">
                 <RightPanel

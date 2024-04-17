@@ -1,4 +1,3 @@
-// useClickAction.ts
 import { useCallback } from 'react';
 
 type StopPropagation = () => void;
